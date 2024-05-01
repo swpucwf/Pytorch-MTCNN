@@ -26,10 +26,11 @@ epoch_num = 30
 model_path = '../infer_models'
 
 # 获取P模型
-device = torch.device("cuda")
+device = torch.device("mps")
 model = PNet()
-model.to(device)
 summary(model, (3, 12, 12))
+
+model.to(device)
 
 # 获取数据
 train_dataset = CustomDataset(data_path)
@@ -43,8 +44,8 @@ scheduler = MultiStepLR(optimizer, milestones=[6, 14, 20], gamma=0.1)
 
 # 获取损失函数
 class_loss = ClassLoss()
-bbox_loss = BBoxLoss()
-landmark_loss = LandmarkLoss()
+bbox_loss = BBoxLoss(device)
+landmark_loss = LandmarkLoss(device)
 
 # 开始训练
 for epoch in range(epoch_num):

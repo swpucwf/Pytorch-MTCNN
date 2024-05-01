@@ -25,10 +25,11 @@ class ClassLoss(nn.Module):
 
 
 class BBoxLoss(nn.Module):
-    def __init__(self):
+    def __init__(self,device):
         super(BBoxLoss, self).__init__()
         self.square_loss = nn.MSELoss(reduction='none')
         self.keep_ratio = 1.0
+        self.device = device
 
     def forward(self, bbox_out, bbox_target, label):
         # 保留pos 1 和part -1 的数据
@@ -38,17 +39,18 @@ class BBoxLoss(nn.Module):
         keep_num = int(torch.sum(valid_label).cpu().numpy() * self.keep_ratio)
         loss = self.square_loss(input=bbox_out, target=bbox_target)
         loss = torch.sum(loss, dim=1)
-        loss = loss.cuda() * valid_label
+        loss = loss.to(self.device)* valid_label
         # 取有效数据计算损失
         loss, _ = torch.topk(loss, k=keep_num, dim=0)
         return torch.mean(loss)
 
 
 class LandmarkLoss(nn.Module):
-    def __init__(self):
+    def __init__(self, device ):
         super(LandmarkLoss, self).__init__()
         self.square_loss = nn.MSELoss(reduction='none')
         self.keep_ratio = 1.0
+        self.device = device
 
     def forward(self, landmark_out, landmark_target, label):
         # 只保留landmark数据 -2
@@ -58,7 +60,7 @@ class LandmarkLoss(nn.Module):
         keep_num = int(torch.sum(valid_label).cpu().numpy() * self.keep_ratio)
         loss = self.square_loss(input=landmark_out, target=landmark_target)
         loss = torch.sum(loss, dim=1)
-        loss = loss.cuda() * valid_label
+        loss = loss.to(self.device) * valid_label
         # 取有效数据计算损失
         loss, _ = torch.topk(loss, k=keep_num, dim=0)
         return torch.mean(loss)
