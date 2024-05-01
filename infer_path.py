@@ -14,22 +14,23 @@ parser.add_argument('--image_path', type=str, default='dataset/test.jpg',  help=
 args = parser.parse_args()
 
 
-device = torch.device("cuda")
+# device = torch.device("mps")
+device = torch.device("mps")
 
 # 获取P模型
-pnet = torch.jit.load(os.path.join(args.model_path, 'PNet.pth'))
+pnet = torch.jit.load(os.path.join(args.model_path, 'PNet.pth'),map_location="cpu")
 pnet.to(device)
 softmax_p = torch.nn.Softmax(dim=0)
 pnet.eval()
 
 # 获取R模型
-rnet = torch.jit.load(os.path.join(args.model_path, 'RNet.pth'))
+rnet = torch.jit.load(os.path.join(args.model_path, 'RNet.pth'),map_location="cpu")
 rnet.to(device)
 softmax_r = torch.nn.Softmax(dim=-1)
 rnet.eval()
 
 # 获取R模型
-onet = torch.jit.load(os.path.join(args.model_path, 'ONet.pth'))
+onet = torch.jit.load(os.path.join(args.model_path, 'ONet.pth'),map_location="cpu")
 onet.to(device)
 softmax_o = torch.nn.Softmax(dim=-1)
 onet.eval()

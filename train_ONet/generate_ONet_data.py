@@ -17,15 +17,15 @@ from utils.utils import get_landmark_from_lfw_neg, get_landmark_from_celeba
 # 模型路径
 model_path = '../infer_models'
 
-device = torch.device("cuda")
+device = torch.device("mps")
 # 获取P模型
-pnet = torch.load(os.path.join(model_path, 'PNet.pth'))
+pnet = torch.jit.load(os.path.join(model_path, 'PNet.pth'),map_location="cpu")
 pnet.to(device)
 pnet.eval()
 softmax_p = torch.nn.Softmax(dim=0)
 
 # 获取R模型
-rnet = torch.load(os.path.join(model_path, 'RNet.pth'))
+rnet = torch.jit.load(os.path.join(model_path, 'RNet.pth'),map_location="cpu")
 rnet.to(device)
 rnet.eval()
 softmax_r = torch.nn.Softmax(dim=-1)

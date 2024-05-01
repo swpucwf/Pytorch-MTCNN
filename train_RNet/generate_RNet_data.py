@@ -19,8 +19,8 @@ from utils.utils import get_landmark_from_lfw_neg, get_landmark_from_celeba
 model_path = '../infer_models'
 
 # 获取P模型
-device = torch.device("cuda")
-pnet = torch.load(os.path.join(model_path, 'PNet.pth'))
+device = torch.device("mps")
+pnet = torch.jit.load(os.path.join(model_path, 'PNet.pth'),map_location="cpu")
 pnet.to(device)
 pnet.eval()
 
